@@ -10,12 +10,18 @@ import UIKit
 
 class ViewController: UIViewController {
 
+    var collectionView: TagCollectionView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        let colletionview = TagCollectionView(frame: view.frame)
-        colletionview.tags = ["first Tag", "Second Tag", "ThirdTag", "FourthTag", "Fifth Tag","first Tag", "Second Tag", "ThirdTag", "FourthTag", "Fifth Tag"]
-        view.addSubview(colletionview)
+        collectionView = TagCollectionView(frame: view.frame)
+        collectionView.tags = ["first Tag", "Second Tag", "ThirdTag", "FourthTag", "Fifth Tag","first Tag", "Second Tag", "ThirdTag", "FourthTag", "Fifth Tag"]
+        view.addSubview(collectionView)
+    }
+    
+    override func viewDidLayoutSubviews() {
+        collectionView.frame = view.frame
     }
 
     override func didReceiveMemoryWarning() {

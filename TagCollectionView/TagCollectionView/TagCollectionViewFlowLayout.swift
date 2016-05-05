@@ -16,6 +16,7 @@ protocol TagCollectionViewDynamicLayoutDelegate {
 class TagCollectionViewFlowLayout: UICollectionViewFlowLayout {
     var delegate: TagCollectionViewDynamicLayoutDelegate!
     var cellPadding: CGFloat = 5
+    var collectionViewBounds: CGRect?
     private var cache = [UICollectionViewLayoutAttributes]()
     private var contentHeight: CGFloat {
         if cache.count > 0 {
@@ -24,6 +25,13 @@ class TagCollectionViewFlowLayout: UICollectionViewFlowLayout {
             return maxY
         }
         return 0
+    }
+    
+    override func shouldInvalidateLayoutForBoundsChange(newBounds: CGRect) -> Bool {
+        cache.removeAll()
+        collectionViewBounds = newBounds
+        prepareLayout()
+        return true
     }
     
     override func prepareLayout() {
@@ -37,10 +45,18 @@ class TagCollectionViewFlowLayout: UICollectionViewFlowLayout {
 
                 var frame = CGRect(x: leftMargin, y: topMargin, width: size.width, height: size.height)
                 
-                if CGRectGetMaxX(frame) > CGRectGetMaxX(collectionView!.frame) {
-                    topMargin += frame.size.height + cellPadding
-                    leftMargin = cellPadding
-                    frame = CGRect(x: leftMargin, y: topMargin, width: size.width, height: size.height)
+                if let bounds = collectionViewBounds {
+                    if CGRectGetMaxX(frame) > CGRectGetMaxX(bounds) {
+                        topMargin += frame.size.height + cellPadding
+                        leftMargin = cellPadding
+                        frame = CGRect(x: leftMargin, y: topMargin, width: size.width, height: size.height)
+                    }
+                } else {
+                    if CGRectGetMaxX(frame) > CGRectGetMaxX(collectionView!.frame) {
+                        topMargin += frame.size.height + cellPadding
+                        leftMargin = cellPadding
+                        frame = CGRect(x: leftMargin, y: topMargin, width: size.width, height: size.height)
+                    }
                 }
                 
                 let attributes = UICollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
